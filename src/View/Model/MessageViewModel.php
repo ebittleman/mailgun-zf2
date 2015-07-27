@@ -66,6 +66,12 @@ class MessageViewModel extends ViewModel
      */
     private $textViewModel = null;
 
+    /**
+     * HTML layout template.
+     * @var string
+     */
+    protected $htmlLayout = '';
+
     protected $template = 'blank';
 
     protected $errorMessage = '';
@@ -85,7 +91,19 @@ class MessageViewModel extends ViewModel
         if ($htmlTemplate !== '') {
             $htmlViewModel = new ViewModel($variables);
             $htmlViewModel->setTemplate($htmlTemplate);
-            $this->setHtmlViewModel($htmlViewModel);
+            $vm = null;
+
+            if (!empty($this->htmlLayout)) {
+                $root = new ViewModel($variables);
+                $root->setTemplate($this->htmlLayout);
+                $root->addChild($htmlViewModel);
+
+                $vm = $root;
+            } else {
+                $vm = $htmlViewModel;
+            }
+
+            $this->setHtmlViewModel($vm);
         }
 
         if ($textTemplate !== '') {
@@ -251,6 +269,24 @@ class MessageViewModel extends ViewModel
         $this->textViewModel = $textViewModel;
 
         return $this->addChild($textViewModel, static::CAPTURETO_TEXT);
+    }
+
+    /**
+     * Get the HTML layout template.
+     * @return string
+     */
+    public function getHtmlLayout()
+    {
+        return $this->htmlLayout;
+    }
+
+    /**
+     * Set the HTML layout template.
+     * @param string $template
+     */
+    public function setHtmlLayout($template)
+    {
+        $this->htmlLayout = $template;
     }
 
     /**
